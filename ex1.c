@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////
-// School of Computer Science
+// Department of Computer Science
 // The University of Manchester
 //
 // This code is licensed under the terms of the Creative Commons 
@@ -7,7 +7,7 @@
 //
 // Skeleton code for COMP37111 coursework, 2019-20
 //
-// Authors: Arturs Bekasovs and Toby Howard
+// Authors: Toby Howard and Arturs Bekasovs
 //
 /////////////////////////////////////////////////////////////////
 
