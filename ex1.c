@@ -16,11 +16,15 @@
 #include <time.h>
 #include <math.h>
 
+#include "ex1.h"
+
 #ifdef MACOSX
   #include <GLUT/glut.h>
 #else
   #include <GL/glut.h>
 #endif
+
+Particle particles[MAX_PARTICLES];
 
 // Display list for coordinate axis 
 GLuint axisList;
@@ -38,6 +42,30 @@ double myRandom()
 
 ///////////////////////////////////////////////
 
+// initialize new particles
+void emit()
+{
+  // glShadeModel(GL_SMOOTH);
+  for (int i = 0; i < MAX_PARTICLES; i++)
+  {
+    particles[i].active = 1;
+    particles[i].life = 1.0f;
+    particles[i].fade = myRandom() / 10.0f;
+    particles[i].x = 0;
+    particles[i].y = 0;
+    particles[i].z = 0;
+    particles[i].r = 1.0;
+    particles[i].g = 0.0;
+    particles[i].b = 0.0;
+    particles[i].d_x = myRandom() * 10.0;
+    particles[i].d_y = myRandom() * 10.0;
+    particles[i].d_z = 10.0;
+    particles[i].g_x = 0;
+    particles[i].g_y = 0;
+    particles[i].g_z = 0.9;
+  }
+}
+
 void display()
 {
   glLoadIdentity();
@@ -48,6 +76,33 @@ void display()
   glClear(GL_COLOR_BUFFER_BIT);
   // If enabled, draw coordinate axis
   if(axisEnabled) glCallList(axisList);
+
+  // display particles
+  for (int i = 0; i < MAX_PARTICLES; i++)
+  {
+    // render active particles
+    if (particles[i].active == 1)
+    {
+      // current position of particle i
+      float x = particles[i].x;
+      float y = particles[i].y;
+      float z = particles[i].z;
+
+      // set particles' color
+      glColor4f(
+        particles[i].r,
+        particles[i].g,
+        particles[i].b,
+        particles[i].life
+      );
+      
+      // draw particles
+      glPointSize(10.0f);
+      glBegin(GL_POINTS);
+      glVertex3f(x, y, z);
+      glEnd();
+    }
+  }
 
   glutSwapBuffers();
 }
@@ -105,6 +160,7 @@ void initGraphics(int argc, char *argv[])
   glutKeyboardFunc(keyboard);
   glutReshapeFunc(reshape);
   makeAxes();
+  emit();
 }
 
 /////////////////////////////////////////////////
