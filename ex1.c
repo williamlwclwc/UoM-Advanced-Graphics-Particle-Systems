@@ -44,7 +44,7 @@ double myRandom()
 
 GLdouble lat = 0, lon = 0;
 GLfloat dir_x, dir_y, dir_z;
-GLfloat eyex = 0.0, eyey = 100.0, eyez = 1000.0;
+GLfloat eyex = 0.0, eyey = 0.0, eyez = -1000.0;
 
 void setView()
 {
@@ -52,8 +52,8 @@ void setView()
   glLoadIdentity();
   // SHIP_VIEW
   dir_x = 100 * cos(DEG_TO_RAD * lat) * sin(DEG_TO_RAD * lon);
-  dir_y = 100 * sin(DEG_TO_RAD * lat) - 100;
-  dir_z = 100 * cos(DEG_TO_RAD * lat) * cos(DEG_TO_RAD * lon) - 1100;
+  dir_y = 100 * sin(DEG_TO_RAD * lat);
+  dir_z = 100 * cos(DEG_TO_RAD * lat) * cos(DEG_TO_RAD * lon);
   gluLookAt(eyex, eyey, eyez,
             dir_x + eyex, dir_y + eyey, dir_z + eyez,
             0.0, 1.0, 0.0);
@@ -63,29 +63,51 @@ void setView()
   //           0.0, 1.0, 0.0);
 }
 
-// initialize new particles
-void emit()
+void set_particle(Particle *particle)
 {
-  // glShadeModel(GL_SMOOTH);
-  for (int i = 0; i < MAX_PARTICLES; i++)
+  particle->active = 1;
+  particle->life = 1.0f;
+  particle->fade = 0;
+  particle->x = 0;
+  particle->y = 0;
+  particle->z = 0;
+  particle->r = 1.0;
+  particle->g = 0.0;
+  particle->b = 0.0;
+  particle->v_x = (myRandom() - myRandom()) * 20.0;
+  particle->v_y = 20 + myRandom() * 10;
+  particle->v_z = (myRandom() - myRandom()) * 20.0;
+  particle->a_x = 0;
+  particle->a_y = 0;
+  particle->a_z = 0;
+  particle->g_x = 0;
+  particle->g_y = -0.9;
+  particle->g_z = 0;
+}
+// initialize new particles
+void init()
+{
+  int init_emit_num = myRandom() * MAX_PARTICLES;
+  for (int i = 0; i < init_emit_num; i++)
   {
-    particles[i].active = 1;
-    particles[i].life = 1.0f;
-    particles[i].fade = myRandom() / 10.0f;
-    particles[i].x = 0;
-    particles[i].y = 0;
-    particles[i].z = 0;
-    particles[i].r = 1.0;
-    particles[i].g = 0.0;
-    particles[i].b = 0.0;
-    particles[i].d_x = myRandom() * 10.0;
-    particles[i].d_y = myRandom() * 10.0;
-    particles[i].d_z = 10.0;
-    particles[i].g_x = 0;
-    particles[i].g_y = 0;
-    particles[i].g_z = 0.9;
+    set_particle(particles+i);
   }
 }
+// consequtive emission
+void emit()
+{
+  for (int i = 0; i < MAX_PARTICLES; i++)
+  {
+    if (particles[i].active == 0)
+    {
+      if (myRandom() > 0.5)
+      {
+        set_particle(particles+i);
+      }
+    }
+  }
+}
+
 
 void display()
 {
@@ -98,9 +120,11 @@ void display()
   // display particles
   for (int i = 0; i < MAX_PARTICLES; i++)
   {
+    int num_active = 0;
     // render active particles
     if (particles[i].active == 1)
     {
+      num_active++;
       // current position of particle i
       float x = particles[i].x;
       float y = particles[i].y;
@@ -119,10 +143,39 @@ void display()
       glBegin(GL_POINTS);
       glVertex3f(x, y, z);
       glEnd();
+
+      // update position
+      particles[i].x += particles[i].v_x * TICK_OF_TIME;
+      particles[i].y += particles[i].v_y * TICK_OF_TIME;
+      particles[i].z += particles[i].v_z * TICK_OF_TIME;
+
+      // update speed
+      particles[i].v_x += (particles[i].a_x + particles[i].g_x) * TICK_OF_TIME;
+      particles[i].v_y += (particles[i].a_y + particles[i].g_y) * TICK_OF_TIME;
+      particles[i].v_z += (particles[i].a_z + particles[i].g_z) * TICK_OF_TIME;
+
+      // update lifetime
+      particles[i].life -= particles[i].fade;
+
+      // if a particle die
+      if (particles[i].y < -1 || particles[i].life < 0)
+      {
+        particles[i].x = 0;
+        particles[i].y = 0;
+        particles[i].z = 0;
+        particles[i].active = 0;
+      }
+
+      // auto emission
+      if (num_active < MAX_PARTICLES / 4)
+      {
+        emit();
+      }
     }
   }
 
   glutSwapBuffers();
+  glutPostRedisplay();
 }
 
 ///////////////////////////////////////////////
@@ -132,8 +185,19 @@ void keyboard(unsigned char key, int x, int y)
   GLdouble heading = 0;
   switch(key)
   {
+    // a
     case 97:
       axisEnabled = !axisEnabled;
+      break;
+    
+    // enter
+    case 13:
+      emit();
+      break;
+
+    // space
+    case 32:
+      emit();
       break;
 
     case 87: // W
@@ -263,7 +327,7 @@ void initGraphics(int argc, char *argv[])
   glutSpecialFunc(cursor_keys);
   glutReshapeFunc(reshape);
   makeAxes();
-  emit();
+  init();
 }
 
 /////////////////////////////////////////////////

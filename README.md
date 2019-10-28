@@ -24,15 +24,15 @@
         * how to demonstrate the measurement?
 2. Draw One Particle
    * [x] Render a particle (e.g. using GL_POINT) and scale it up with glPointSize()
-   * [ ] Give the particle an initial position, velocity and acceleration
-   * [ ] A loop that implements 'ticks' of time, at each tick, work out a new position of the particle (movement should conform to the equation of motion under gravity) and draw it
-   * [ ] Use the space key to reset time to 0 and trigger the system to start emit particles
+   * [x] Give the particle an initial position, velocity and acceleration
+   * [x] A loop that implements 'ticks' of time, at each tick, work out a new position of the particle (movement should conform to the equation of motion under gravity) and draw it
+   * [x] Use the space key to reset time to 0 and trigger the system to start emit particles
 3. Draw A System of Particles
-   * [ ] build an emitter (single-point or geometry)
-     * single-point emitter: all particles are emitted from one point in space
-     * geometry emiiter: particles are emited from multiple sources arranged in some geometrical pattern
-   * [ ] apply the data structure to each of the particles produced by the emitter in turn
-   * [ ] add randomness for the particles
+   * [x] build an emitter (single-point or geometry)
+     [x] single-point emitter: all particles are emitted from one point in space
+     [ ] geometry emiiter: particles are emited from multiple sources arranged in some geometrical pattern
+   * [x] apply the data structure to each of the particles produced by the emitter in turn
+   * [x] add randomness for the particles
 4. Control of Particle Parameters
    * [ ] initial velocity
    * [ ] initial color
