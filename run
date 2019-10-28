@@ -1,2 +1,2 @@
-gcc -lglut -lGL -lGLU ex1.c -o ex1
+gcc -lglut -lGL -lGLU -lm ex1.c -o ex1
 ./ex1

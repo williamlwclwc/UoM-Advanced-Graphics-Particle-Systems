@@ -1,5 +1,10 @@
 #define MAX_PARTICLES 1
 
+#define MILLION 1000000
+#define DEG_TO_RAD 0.01745329
+#define RUN_SPEED  1.6 * 10
+#define TURN_ANGLE 4.0
+
 typedef struct
 {
     short active; // show particle on screen?

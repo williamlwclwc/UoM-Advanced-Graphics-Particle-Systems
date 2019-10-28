@@ -42,6 +42,27 @@ double myRandom()
 
 ///////////////////////////////////////////////
 
+GLdouble lat = 0, lon = 0;
+GLfloat dir_x, dir_y, dir_z;
+GLfloat eyex = 0.0, eyey = 100.0, eyez = 1000.0;
+
+void setView()
+{
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  // SHIP_VIEW
+  dir_x = 100 * cos(DEG_TO_RAD * lat) * sin(DEG_TO_RAD * lon);
+  dir_y = 100 * sin(DEG_TO_RAD * lat) - 100;
+  dir_z = 100 * cos(DEG_TO_RAD * lat) * cos(DEG_TO_RAD * lon) - 1100;
+  gluLookAt(eyex, eyey, eyez,
+            dir_x + eyex, dir_y + eyey, dir_z + eyez,
+            0.0, 1.0, 0.0);
+
+  // gluLookAt(0.0, 100.0, 1000.0,
+  //           0.0, 0.0, 0.0,
+  //           0.0, 1.0, 0.0);
+}
+
 // initialize new particles
 void emit()
 {
@@ -68,10 +89,7 @@ void emit()
 
 void display()
 {
-  glLoadIdentity();
-  gluLookAt(0.0, 100.0, 1000.0,
-            0.0, 0.0, 0.0,
-            0.0, 1.0, 0.0);
+  setView();
   // Clear the screen
   glClear(GL_COLOR_BUFFER_BIT);
   // If enabled, draw coordinate axis
@@ -111,9 +129,93 @@ void display()
 
 void keyboard(unsigned char key, int x, int y)
 {
-  if(key == 27) exit(0);
+  GLdouble heading = 0;
+  switch(key)
+  {
+    case 97:
+      axisEnabled = !axisEnabled;
+      break;
+
+    case 87: // W
+      // move to left
+      heading = 90;
+      eyey += RUN_SPEED * sin(DEG_TO_RAD*heading);
+      break;
+    case 83: // S
+      // move to right
+      heading = -90;
+      eyey += RUN_SPEED * sin(DEG_TO_RAD*heading);
+      break;
+    case 65: // A
+      // move to left
+      heading = lon + 90;
+      eyex += RUN_SPEED * sin(DEG_TO_RAD*heading);
+      eyez += RUN_SPEED * cos(DEG_TO_RAD*heading);
+      break;
+    case 68: // D
+      // move to right
+      heading = lon - 90;
+      eyex += RUN_SPEED * sin(DEG_TO_RAD*heading);
+      eyez += RUN_SPEED * cos(DEG_TO_RAD*heading);
+      break;
+    case 27:  /* Escape key */
+      exit(0);
+  }
   glutPostRedisplay();
 }
+
+void cursor_keys(int key, int x, int y) 
+{
+  GLdouble temp = 0;
+  GLdouble heading = 0;
+  switch (key) 
+  {
+    /* To be completed */
+    case GLUT_KEY_LEFT:
+      // rotate to the left
+      temp = lon + TURN_ANGLE;
+      lon = temp;
+      break;
+    case GLUT_KEY_RIGHT:
+      // rotate to the right
+      temp = lon - TURN_ANGLE;
+      lon = temp;
+      break;
+    case GLUT_KEY_PAGE_UP:
+      // tilt up
+      temp = lat + TURN_ANGLE;
+      if(temp < 90 && temp > -90)
+      {
+        lat = temp;
+      }
+      break;
+    case GLUT_KEY_PAGE_DOWN:
+      // tilt down
+      temp = lat - TURN_ANGLE;
+      if(temp < 90 && temp > -90)
+      {
+        lat = temp;
+      }
+      break;
+    case GLUT_KEY_HOME:
+      // re-center lat
+      lat = 0;
+      break;
+    case GLUT_KEY_UP:
+      // step forwards 
+      heading = lon;
+      eyex += RUN_SPEED * sin(DEG_TO_RAD*heading);
+      eyez += RUN_SPEED * cos(DEG_TO_RAD*heading);
+      break;
+    case GLUT_KEY_DOWN:
+      // step backwards
+      heading = lon;
+      eyex -= RUN_SPEED * sin(DEG_TO_RAD*heading);
+      eyez -= RUN_SPEED * cos(DEG_TO_RAD*heading);
+      break;
+  }
+  glutPostRedisplay();
+} 
 
 ///////////////////////////////////////////////
 
@@ -158,6 +260,7 @@ void initGraphics(int argc, char *argv[])
   glutCreateWindow("COMP37111 Particles");
   glutDisplayFunc(display);
   glutKeyboardFunc(keyboard);
+  glutSpecialFunc(cursor_keys);
   glutReshapeFunc(reshape);
   makeAxes();
   emit();
