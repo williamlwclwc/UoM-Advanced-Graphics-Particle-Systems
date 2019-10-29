@@ -46,6 +46,166 @@ GLdouble lat = 0, lon = 0;
 GLfloat dir_x, dir_y, dir_z;
 GLfloat eyex = 0.0, eyey = 0.0, eyez = -1000.0;
 
+// particle parameters
+GLfloat init_vx = 20;
+GLfloat init_vy = 20;
+GLfloat init_vz = 20;
+GLfloat init_r = 1.0;
+GLfloat init_g = 0;
+GLfloat init_b = 0;
+GLfloat gravity = -0.9;
+GLfloat fade = 0.01;
+GLfloat set_num_particles = 100;
+
+// create menu to control parameters
+void processMainMenu() {}
+
+void processVelocityMenu(int menuentry)
+{
+  switch(menuentry)
+  {
+    case 1:
+      init_vx = 40;
+      init_vy = 40;
+      init_vz = 40;
+      break;
+    case 2:
+      init_vx = 20;
+      init_vy = 20;
+      init_vz = 20;
+      break;
+    case 3:
+      init_vx = 10;
+      init_vy = 10;
+      init_vz = 10;
+      break;
+    default:
+      init_vx = 20;
+      init_vy = 20;
+      init_vz = 20;
+  }
+}
+
+void processColorMenu(int menuentry)
+{
+  switch(menuentry)
+  {
+    case 1:
+      // red
+      init_r = 1.0;
+      init_g = 0;
+      init_b = 0;
+      break;
+    case 2:
+      // orange
+      init_r = 1.0;
+      init_g = 0.5;
+      init_b = 0;
+      break;
+    case 3:
+      // yellow
+      init_r = 1.0;
+      init_g = 1.0;
+      init_b = 0;
+      break;
+    default:
+      // red
+      init_r = 1.0;
+      init_g = 0;
+      init_b = 0;
+  }
+}
+
+void processGravityMenu(int menuentry)
+{
+  switch(menuentry)
+  {
+    case 1:
+      gravity = -5.0;
+      break;
+    case 2:
+      gravity = -0.98;
+      break;
+    case 3:
+      gravity = -0.2;
+      break;
+    default:
+      gravity = -0.98;
+  }
+}
+
+void processLifetimeMenu(int menuentry)
+{
+  switch(menuentry)
+  {
+    case 1:
+      fade = 0;
+      break;
+    case 2:
+      fade = 0.01;
+      break;
+    case 3:
+      fade = 0.1;
+      break;
+    default:
+      fade = 0.01;
+  }
+}
+
+void processNumberMenu(int menuentry)
+{
+  switch(menuentry)
+  {
+    case 1:
+      set_num_particles = 1000;
+      break;
+    case 2:
+      set_num_particles = 100;
+      break;
+    case 3:
+      set_num_particles = 20;
+      break;
+    default:
+      set_num_particles = 100;
+  }
+}
+
+void init_menu()
+{
+  int velocityMenu = glutCreateMenu(processVelocityMenu);
+  glutAddMenuEntry("high", 1);
+  glutAddMenuEntry("normal", 2);
+  glutAddMenuEntry("low", 3);
+
+  int colorMenu = glutCreateMenu(processColorMenu);
+  glutAddMenuEntry("Red", 1);
+  glutAddMenuEntry("Orange", 2);
+  glutAddMenuEntry("Yellow", 3);
+
+  int gravityMenu = glutCreateMenu(processGravityMenu);
+  glutAddMenuEntry("intense", 1);
+  glutAddMenuEntry("normal", 2);
+  glutAddMenuEntry("low", 3);
+
+  int lifetimeMenu = glutCreateMenu(processLifetimeMenu);
+  glutAddMenuEntry("long", 1);
+  glutAddMenuEntry("normal", 2);
+  glutAddMenuEntry("short", 3);
+
+  int numberMenu = glutCreateMenu(processNumberMenu);
+  glutAddMenuEntry("1000", 1);
+  glutAddMenuEntry("100", 2);
+  glutAddMenuEntry("20", 3);
+
+  glutCreateMenu(processMainMenu);
+  glutAddSubMenu("Initial velocity of particles", velocityMenu);
+  glutAddSubMenu("Initial color of particles", colorMenu);
+  glutAddSubMenu("Gravity intensity", gravityMenu);
+  glutAddSubMenu("Lifetime of particles", lifetimeMenu);
+  glutAddSubMenu("Maximum number of particles", numberMenu);
+  glutAttachMenu(GLUT_RIGHT_BUTTON);
+}
+
 void setView()
 {
   glMatrixMode(GL_MODELVIEW);
@@ -67,27 +227,27 @@ void set_particle(Particle *particle)
 {
   particle->active = 1;
   particle->life = 1.0f;
-  particle->fade = 0;
+  particle->fade = fade;
   particle->x = 0;
   particle->y = 0;
   particle->z = 0;
-  particle->r = 1.0;
-  particle->g = 0.0;
-  particle->b = 0.0;
-  particle->v_x = (myRandom() - myRandom()) * 20.0;
-  particle->v_y = 20 + myRandom() * 10;
-  particle->v_z = (myRandom() - myRandom()) * 20.0;
+  particle->r = init_r;
+  particle->g = init_g;
+  particle->b = init_b;
+  particle->v_x = (myRandom() - myRandom()) * init_vx;
+  particle->v_y = init_vy + myRandom() * (init_vy/2);
+  particle->v_z = (myRandom() - myRandom()) * init_vz;
   particle->a_x = 0;
   particle->a_y = 0;
   particle->a_z = 0;
   particle->g_x = 0;
-  particle->g_y = -0.9;
+  particle->g_y = gravity;
   particle->g_z = 0;
 }
 // initialize new particles
 void init()
 {
-  int init_emit_num = myRandom() * MAX_PARTICLES;
+  int init_emit_num = myRandom() * set_num_particles;
   for (int i = 0; i < init_emit_num; i++)
   {
     set_particle(particles+i);
@@ -96,7 +256,7 @@ void init()
 // consequtive emission
 void emit()
 {
-  for (int i = 0; i < MAX_PARTICLES; i++)
+  for (int i = 0; i < set_num_particles; i++)
   {
     if (particles[i].active == 0)
     {
@@ -108,7 +268,6 @@ void emit()
   }
 }
 
-
 void display()
 {
   setView();
@@ -118,7 +277,7 @@ void display()
   if(axisEnabled) glCallList(axisList);
 
   // display particles
-  for (int i = 0; i < MAX_PARTICLES; i++)
+  for (int i = 0; i < set_num_particles; i++)
   {
     int num_active = 0;
     // render active particles
@@ -167,7 +326,7 @@ void display()
       }
 
       // auto emission
-      if (num_active < MAX_PARTICLES / 4)
+      if (num_active < set_num_particles / 4)
       {
         emit();
       }
@@ -326,6 +485,7 @@ void initGraphics(int argc, char *argv[])
   glutKeyboardFunc(keyboard);
   glutSpecialFunc(cursor_keys);
   glutReshapeFunc(reshape);
+  init_menu();
   makeAxes();
   init();
 }

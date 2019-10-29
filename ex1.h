@@ -1,4 +1,4 @@
-#define MAX_PARTICLES 100
+#define MAX_PARTICLES 1001
 #define TICK_OF_TIME 0.2
 
 #define MILLION 1000000
