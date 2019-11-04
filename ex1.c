@@ -47,14 +47,14 @@ GLfloat dir_x, dir_y, dir_z;
 GLfloat eyex = 0.0, eyey = 0.0, eyez = -1000.0;
 
 // particle parameters
-GLfloat init_vx = 20;
+GLfloat init_vx = 10;
 GLfloat init_vy = 20;
-GLfloat init_vz = 20;
+GLfloat init_vz = 10;
 GLfloat init_r = 1.0;
 GLfloat init_g = 0;
 GLfloat init_b = 0;
 GLfloat gravity = -0.9;
-GLfloat fade = 0.01;
+GLfloat fade = 0.005;
 GLfloat set_num_particles = 100;
 
 // create menu to control parameters
@@ -65,24 +65,24 @@ void processVelocityMenu(int menuentry)
   switch(menuentry)
   {
     case 1:
-      init_vx = 40;
+      init_vx = 20;
       init_vy = 40;
-      init_vz = 40;
+      init_vz = 20;
       break;
     case 2:
-      init_vx = 20;
-      init_vy = 20;
-      init_vz = 20;
-      break;
-    case 3:
       init_vx = 10;
-      init_vy = 10;
+      init_vy = 20;
       init_vz = 10;
       break;
+    case 3:
+      init_vx = 5;
+      init_vy = 10;
+      init_vz = 5;
+      break;
     default:
-      init_vx = 20;
+      init_vx = 10;
       init_vy = 20;
-      init_vz = 20;
+      init_vz = 10;
   }
 }
 
@@ -142,13 +142,13 @@ void processLifetimeMenu(int menuentry)
       fade = 0;
       break;
     case 2:
-      fade = 0.01;
+      fade = 0.005;
       break;
     case 3:
       fade = 0.1;
       break;
     default:
-      fade = 0.01;
+      fade = 0.005;
   }
 }
 
@@ -231,11 +231,20 @@ void set_particle(Particle *particle)
   particle->x = 0;
   particle->y = 0;
   particle->z = 0;
+  particle->x1 = 0;
+  particle->y1 = 0;
+  particle->z1 = 0;
+  particle->x2 = 0;
+  particle->y2 = 0;
+  particle->z2 = 0;
+  particle->x3 = 0;
+  particle->y3 = 0;
+  particle->z3 = 0;
   particle->r = init_r;
   particle->g = init_g;
   particle->b = init_b;
   particle->v_x = (myRandom() - myRandom()) * init_vx;
-  particle->v_y = init_vy + myRandom() * (init_vy/2);
+  particle->v_y = init_vy + myRandom() * init_vy;
   particle->v_z = (myRandom() - myRandom()) * init_vz;
   particle->a_x = 0;
   particle->a_y = 0;
@@ -289,6 +298,16 @@ void display()
       float y = particles[i].y;
       float z = particles[i].z;
 
+      float x1 = particles[i].x1;
+      float y1 = particles[i].y1;
+      float z1 = particles[i].z1;
+      float x2 = particles[i].x2;
+      float y2 = particles[i].y2;
+      float z2 = particles[i].z2;
+      float x3 = particles[i].x3;
+      float y3 = particles[i].y3;
+      float z3 = particles[i].z3;
+
       // set particles' color
       glColor4f(
         particles[i].r,
@@ -298,12 +317,39 @@ void display()
       );
       
       // draw particles
-      glPointSize(10.0f);
+      glPointSize(8.0f);
       glBegin(GL_POINTS);
       glVertex3f(x, y, z);
       glEnd();
 
+      glPointSize(6.0f);
+      glBegin(GL_POINTS);
+      glVertex3f(x1, y1, z1);
+      glEnd();
+
+      glPointSize(4.0f);
+      glBegin(GL_POINTS);
+      glVertex3f(x2, y2, z2);
+      glEnd();
+
+      glPointSize(2.0f);
+      glBegin(GL_POINTS);
+      glVertex3f(x3, y3, z3);
+      glEnd();
+
       // update position
+      particles[i].x3 = particles[i].x2;
+      particles[i].y3 = particles[i].y2;
+      particles[i].z3 = particles[i].z2;
+
+      particles[i].x2 = particles[i].x1;
+      particles[i].y2 = particles[i].y1;
+      particles[i].z2 = particles[i].z1;
+
+      particles[i].x1 = particles[i].x;
+      particles[i].y1 = particles[i].y;
+      particles[i].z1 = particles[i].z;
+
       particles[i].x += particles[i].v_x * TICK_OF_TIME;
       particles[i].y += particles[i].v_y * TICK_OF_TIME;
       particles[i].z += particles[i].v_z * TICK_OF_TIME;

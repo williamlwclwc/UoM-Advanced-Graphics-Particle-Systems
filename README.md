@@ -34,16 +34,16 @@
    * [x] apply the data structure to each of the particles produced by the emitter in turn
    * [x] add randomness for the particles
 4. Control of Particle Parameters
-   * [ ] initial velocity
-   * [ ] initial color
-   * [ ] intensity of gravity
-   * [ ] lifetime of particle
-   * [ ] number of particles in system
+   * [x] initial velocity
+   * [x] initial color
+   * [x] intensity of gravity
+   * [x] lifetime of particle
+   * [x] number of particles in system
 5. Improved/Alternative Redering
    * [ ] draw particles beyond GL_Point
      * faster or slower?
    * Implement at least one of the following:
-     * [ ] Particle trails
+     * [x] Particle trails
      * [ ] Render as a little billboarded sprite using GL_QUADS
      * [ ] Others
 6. Conduct Experiments to Explore Performance
@@ -59,5 +59,7 @@
 7. Sophistication and flair
 
 ## How to run
+
+* use './run' to compile and run with bash
 
 ## Design and Implementation
