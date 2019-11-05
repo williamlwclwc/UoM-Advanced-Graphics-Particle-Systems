@@ -337,6 +337,11 @@ void display()
       glVertex3f(x3, y3, z3);
       glEnd();
 
+      // update speed
+      particles[i].v_x += (particles[i].a_x + particles[i].g_x) * TICK_OF_TIME;
+      particles[i].v_y += (particles[i].a_y + particles[i].g_y) * TICK_OF_TIME;
+      particles[i].v_z += (particles[i].a_z + particles[i].g_z) * TICK_OF_TIME;
+
       // update position
       particles[i].x3 = particles[i].x2;
       particles[i].y3 = particles[i].y2;
@@ -353,11 +358,6 @@ void display()
       particles[i].x += particles[i].v_x * TICK_OF_TIME;
       particles[i].y += particles[i].v_y * TICK_OF_TIME;
       particles[i].z += particles[i].v_z * TICK_OF_TIME;
-
-      // update speed
-      particles[i].v_x += (particles[i].a_x + particles[i].g_x) * TICK_OF_TIME;
-      particles[i].v_y += (particles[i].a_y + particles[i].g_y) * TICK_OF_TIME;
-      particles[i].v_z += (particles[i].a_z + particles[i].g_z) * TICK_OF_TIME;
 
       // update lifetime
       particles[i].life -= particles[i].fade;
