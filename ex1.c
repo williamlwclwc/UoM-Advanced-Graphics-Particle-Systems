@@ -57,8 +57,7 @@ GLfloat gravity = -0.9;
 GLfloat fade = 0.005;
 GLfloat set_num_particles = 100;
 
-BITMAPINFO *TexInfo;
-GLubyte *TexBits;
+unsigned char *data;
 
 // create menu to control parameters
 void processMainMenu() {}
@@ -229,23 +228,35 @@ void setView()
 // load texture images
 // according to tutorials: https://learnopengl.com/Getting-started/Textures
 // referencing image loading library stb_image.h: https://github.com/nothings/stb/blob/master/stb_image.h
-unsigned int texture1;
+unsigned int lava_rock;
 void loadtextures()
 {
-  TexBits = LoadDIBitmap("texture1.bmp", &TexInfo);
-  if(TexBits == NULL) 
+  int width, height, nrChannels;
+  data = stbi_load("lava-rock.jpg", &width, &height, &nrChannels, 0);
+  if(data == NULL) 
   {
-    printf("failed to load texture image");
+    printf("failed to load texture image\n");
+  } 
+  else
+  {
+    printf("texture loaded\n");
   }
-  glGenTextures(1,&texture1);
+
+  glGenTextures(1,&lava_rock);
+  glBindTexture(GL_TEXTURE_2D, lava_rock);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexImage2D(GL_TEXTURE_2D, 0, 3, TexInfo->bmiHeader.biWidth,
-            TexInfo->bmiHeader.biHeight, 0, GL_BGR_EXT,
-            GL_UNSIGNED_BYTE, TexBits);
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, width,
+            height, 0, GL_RGB,
+            GL_UNSIGNED_BYTE, data);
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+  if(data!=NULL)
+  {
+    stbi_image_free(data);
+  }
 }
 
 void set_particle(Particle *particle)
@@ -308,7 +319,7 @@ void display()
 {
   setView();
   // Clear the screen
-  glClearColor(70/255.0, 130/255.0, 180/255.0, 1.0); // dodger blue
+  glClearColor(0, 0, 0, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
   // If enabled, draw coordinate axis
   if(axisEnabled) glCallList(axisList);
@@ -337,12 +348,12 @@ void display()
       float z3 = particles[i].z3;
     
       // set particles' color
-      // glColor4f(
-      //   particles[i].r,
-      //   particles[i].g,
-      //   particles[i].b,
-      //   particles[i].life
-      // );
+      glColor4f(
+        particles[i].r,
+        particles[i].g,
+        particles[i].b,
+        particles[i].life
+      );
       
       // draw particles
 
@@ -373,25 +384,8 @@ void display()
       // then top right corner coordinate is (x+size, y+size, z)
       // then buttom right corner coordinate is (x+size, y-size, z)
       // then buttom left corner coordinate is (x-size, y-size, z)
-      
-      // glBindTexture(GL_TEXTURE_2D, texture1);
 
-      glEnable(GL_TEXTURE_2D);
-      glNormal3f(0.0f, 0.0f, 1.0f);
-
-      int size = 8;
-      glBegin(GL_QUADS);
-      glTexCoord2f(0.0f, 1.0f);
-      glVertex3f(x - size, y + size, z);
-      glTexCoord2f(1.0f, 1.0f);
-      glVertex3f(x + size, y + size, z);
-      glTexCoord2f(1.0f, 0.0f);
-      glVertex3f(x + size, y - size, z);
-      glTexCoord2f(0.0f, 0.0f);
-      glVertex3f(x - size, y - size, z);
-      glEnd();
-      
-      size = 6;
+      int size = 6;
       glBegin(GL_QUADS);
       glVertex3f(x1 - size, y1 + size, z1);
       glVertex3f(x1 + size, y1 + size, z1);
@@ -413,6 +407,22 @@ void display()
       glVertex3f(x3 + size, y3 + size, z3);
       glVertex3f(x3 + size, y3 - size, z3);
       glVertex3f(x3 - size, y3 - size, z3);
+      glEnd();
+
+      glBindTexture(GL_TEXTURE_2D, lava_rock);
+      glEnable(GL_TEXTURE_2D);
+      glNormal3f(0.0f, 0.0f, 1.0f);
+
+      size = 8;
+      glBegin(GL_QUADS);
+      glTexCoord2f(0.0f, 1.0f);
+      glVertex3f(x - size, y + size, z);
+      glTexCoord2f(1.0f, 1.0f);
+      glVertex3f(x + size, y + size, z);
+      glTexCoord2f(1.0f, 0.0f);
+      glVertex3f(x + size, y - size, z);
+      glTexCoord2f(0.0f, 0.0f);
+      glVertex3f(x - size, y - size, z);
       glEnd();
 
       glDisable(GL_TEXTURE_2D);

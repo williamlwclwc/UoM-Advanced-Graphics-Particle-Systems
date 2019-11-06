@@ -6,7 +6,8 @@
 #define RUN_SPEED  1.6 * 10
 #define TURN_ANGLE 4.0
 
-#include "bitmap.c"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 typedef struct
 {
