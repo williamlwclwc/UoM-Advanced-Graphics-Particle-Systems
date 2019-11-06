@@ -45,6 +45,7 @@
    * Implement at least one of the following:
      * [x] Particle trails
      * [x] Render as a little billboarded sprite using GL_QUADS
+     * [x] alpha value to show transparency
      * [ ] Others
 6. Conduct Experiments to Explore Performance
 

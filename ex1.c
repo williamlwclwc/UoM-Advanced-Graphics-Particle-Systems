@@ -623,6 +623,8 @@ void initGraphics(int argc, char *argv[])
   glutReshapeFunc(reshape);
   loadtextures();
   init_menu();
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable( GL_BLEND );
   makeAxes();
   init();
 }
