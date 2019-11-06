@@ -57,6 +57,9 @@ GLfloat gravity = -0.9;
 GLfloat fade = 0.005;
 GLfloat set_num_particles = 100;
 
+BITMAPINFO *TexInfo;
+GLubyte *TexBits;
+
 // create menu to control parameters
 void processMainMenu() {}
 
@@ -157,7 +160,7 @@ void processNumberMenu(int menuentry)
   switch(menuentry)
   {
     case 1:
-      set_num_particles = 1000;
+      set_num_particles = 5000;
       break;
     case 2:
       set_num_particles = 100;
@@ -193,7 +196,7 @@ void init_menu()
   glutAddMenuEntry("short", 3);
 
   int numberMenu = glutCreateMenu(processNumberMenu);
-  glutAddMenuEntry("1000", 1);
+  glutAddMenuEntry("5000", 1);
   glutAddMenuEntry("100", 2);
   glutAddMenuEntry("20", 3);
 
@@ -221,6 +224,28 @@ void setView()
   // gluLookAt(0.0, 100.0, 1000.0,
   //           0.0, 0.0, 0.0,
   //           0.0, 1.0, 0.0);
+}
+
+// load texture images
+// according to tutorials: https://learnopengl.com/Getting-started/Textures
+// referencing image loading library stb_image.h: https://github.com/nothings/stb/blob/master/stb_image.h
+unsigned int texture1;
+void loadtextures()
+{
+  TexBits = LoadDIBitmap("texture1.bmp", &TexInfo);
+  if(TexBits == NULL) 
+  {
+    printf("failed to load texture image");
+  }
+  glGenTextures(1,&texture1);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, TexInfo->bmiHeader.biWidth,
+            TexInfo->bmiHeader.biHeight, 0, GL_BGR_EXT,
+            GL_UNSIGNED_BYTE, TexBits);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 }
 
 void set_particle(Particle *particle)
@@ -253,15 +278,17 @@ void set_particle(Particle *particle)
   particle->g_y = gravity;
   particle->g_z = 0;
 }
+
 // initialize new particles
 void init()
-{
+{ 
   int init_emit_num = myRandom() * set_num_particles;
   for (int i = 0; i < init_emit_num; i++)
   {
     set_particle(particles+i);
   }
 }
+
 // consequtive emission
 void emit()
 {
@@ -281,6 +308,7 @@ void display()
 {
   setView();
   // Clear the screen
+  glClearColor(70/255.0, 130/255.0, 180/255.0, 1.0); // dodger blue
   glClear(GL_COLOR_BUFFER_BIT);
   // If enabled, draw coordinate axis
   if(axisEnabled) glCallList(axisList);
@@ -307,40 +335,87 @@ void display()
       float x3 = particles[i].x3;
       float y3 = particles[i].y3;
       float z3 = particles[i].z3;
-
+    
       // set particles' color
-      glColor4f(
-        particles[i].r,
-        particles[i].g,
-        particles[i].b,
-        particles[i].life
-      );
+      // glColor4f(
+      //   particles[i].r,
+      //   particles[i].g,
+      //   particles[i].b,
+      //   particles[i].life
+      // );
       
       // draw particles
-      glPointSize(8.0f);
-      glBegin(GL_POINTS);
-      glVertex3f(x, y, z);
+
+      // simple render particles as points
+
+      // glPointSize(8.0f);
+      // glBegin(GL_POINTS);
+      // glVertex3f(x, y, z);
+      // glEnd();
+
+      // glPointSize(6.0f);
+      // glBegin(GL_POINTS);
+      // glVertex3f(x1, y1, z1);
+      // glEnd();
+
+      // glPointSize(4.0f);
+      // glBegin(GL_POINTS);
+      // glVertex3f(x2, y2, z2);
+      // glEnd();
+
+      // glPointSize(2.0f);
+      // glBegin(GL_POINTS);
+      // glVertex3f(x3, y3, z3);
+      // glEnd();
+
+      // render squares: assume length of a side is 'size', center is position (x, y, z)
+      // then top left corner coordinate is (x-size, y+size, z)
+      // then top right corner coordinate is (x+size, y+size, z)
+      // then buttom right corner coordinate is (x+size, y-size, z)
+      // then buttom left corner coordinate is (x-size, y-size, z)
+      
+      // glBindTexture(GL_TEXTURE_2D, texture1);
+
+      glEnable(GL_TEXTURE_2D);
+      glNormal3f(0.0f, 0.0f, 1.0f);
+
+      int size = 8;
+      glBegin(GL_QUADS);
+      glTexCoord2f(0.0f, 1.0f);
+      glVertex3f(x - size, y + size, z);
+      glTexCoord2f(1.0f, 1.0f);
+      glVertex3f(x + size, y + size, z);
+      glTexCoord2f(1.0f, 0.0f);
+      glVertex3f(x + size, y - size, z);
+      glTexCoord2f(0.0f, 0.0f);
+      glVertex3f(x - size, y - size, z);
+      glEnd();
+      
+      size = 6;
+      glBegin(GL_QUADS);
+      glVertex3f(x1 - size, y1 + size, z1);
+      glVertex3f(x1 + size, y1 + size, z1);
+      glVertex3f(x1 + size, y1 - size, z1);
+      glVertex3f(x1 - size, y1 - size, z1);
       glEnd();
 
-      glPointSize(6.0f);
-      glBegin(GL_POINTS);
-      glVertex3f(x1, y1, z1);
+      size = 4;
+      glBegin(GL_QUADS);
+      glVertex3f(x2 - size, y2 + size, z2);
+      glVertex3f(x2 + size, y2 + size, z2);
+      glVertex3f(x2 + size, y2 - size, z2);
+      glVertex3f(x2 - size, y2 - size, z2);
       glEnd();
 
-      glPointSize(4.0f);
-      glBegin(GL_POINTS);
-      glVertex3f(x2, y2, z2);
+      size = 2;
+      glBegin(GL_QUADS);
+      glVertex3f(x3 - size, y3 + size, z3);
+      glVertex3f(x3 + size, y3 + size, z3);
+      glVertex3f(x3 + size, y3 - size, z3);
+      glVertex3f(x3 - size, y3 - size, z3);
       glEnd();
 
-      glPointSize(2.0f);
-      glBegin(GL_POINTS);
-      glVertex3f(x3, y3, z3);
-      glEnd();
-
-      // update speed
-      particles[i].v_x += (particles[i].a_x + particles[i].g_x) * TICK_OF_TIME;
-      particles[i].v_y += (particles[i].a_y + particles[i].g_y) * TICK_OF_TIME;
-      particles[i].v_z += (particles[i].a_z + particles[i].g_z) * TICK_OF_TIME;
+      glDisable(GL_TEXTURE_2D);
 
       // update position
       particles[i].x3 = particles[i].x2;
@@ -355,9 +430,14 @@ void display()
       particles[i].y1 = particles[i].y;
       particles[i].z1 = particles[i].z;
 
-      particles[i].x += particles[i].v_x * TICK_OF_TIME;
-      particles[i].y += particles[i].v_y * TICK_OF_TIME;
-      particles[i].z += particles[i].v_z * TICK_OF_TIME;
+      particles[i].x += particles[i].v_x * TICK_OF_TIME + 0.5 * (particles[i].a_x + particles[i].g_x) * TICK_OF_TIME * TICK_OF_TIME;
+      particles[i].y += particles[i].v_y * TICK_OF_TIME + 0.5 * (particles[i].a_y + particles[i].g_y) * TICK_OF_TIME * TICK_OF_TIME;
+      particles[i].z += particles[i].v_z * TICK_OF_TIME + 0.5 * (particles[i].a_z + particles[i].g_z) * TICK_OF_TIME * TICK_OF_TIME;
+
+      // update speed
+      particles[i].v_x += (particles[i].a_x + particles[i].g_x) * TICK_OF_TIME;
+      particles[i].v_y += (particles[i].a_y + particles[i].g_y) * TICK_OF_TIME;
+      particles[i].v_z += (particles[i].a_z + particles[i].g_z) * TICK_OF_TIME;
 
       // update lifetime
       particles[i].life -= particles[i].fade;
@@ -531,6 +611,7 @@ void initGraphics(int argc, char *argv[])
   glutKeyboardFunc(keyboard);
   glutSpecialFunc(cursor_keys);
   glutReshapeFunc(reshape);
+  loadtextures();
   init_menu();
   makeAxes();
   init();

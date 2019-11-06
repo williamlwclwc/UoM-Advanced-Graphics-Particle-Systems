@@ -1,10 +1,12 @@
-#define MAX_PARTICLES 1001
-#define TICK_OF_TIME 0.4
+#define MAX_PARTICLES 10001
+#define TICK_OF_TIME 0.3
 
 #define MILLION 1000000
 #define DEG_TO_RAD 0.01745329
 #define RUN_SPEED  1.6 * 10
 #define TURN_ANGLE 4.0
+
+#include "bitmap.c"
 
 typedef struct
 {

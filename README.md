@@ -40,11 +40,11 @@
    * [x] lifetime of particle
    * [x] number of particles in system
 5. Improved/Alternative Redering
-   * [ ] draw particles beyond GL_Point
-     * faster or slower?
+   * [x] draw particles beyond GL_Point
+     * faster or slower? I think it's a little faster
    * Implement at least one of the following:
      * [x] Particle trails
-     * [ ] Render as a little billboarded sprite using GL_QUADS
+     * [x] Render as a little billboarded sprite using GL_QUADS
      * [ ] Others
 6. Conduct Experiments to Explore Performance
 
