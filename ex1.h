@@ -21,6 +21,5 @@ typedef struct
     float x3, y3, z3; // previous position 3
     float v_x, v_y, v_z; // speed of each particle
     float a_x, a_y, a_z; // acceleration of particle
-    float g_x, g_y, g_z; // direction of gravity
 } Particle;
 

@@ -51,7 +51,7 @@ GLfloat init_vx = 10;
 GLfloat init_vy = 20;
 GLfloat init_vz = 10;
 GLfloat init_r = 1.0;
-GLfloat init_g = 0;
+GLfloat init_g = 1.0;
 GLfloat init_b = 0;
 GLfloat gravity = -0.9;
 GLfloat fade = 0.005;
@@ -111,9 +111,9 @@ void processColorMenu(int menuentry)
       init_b = 0;
       break;
     default:
-      // red
+      // yellow
       init_r = 1.0;
-      init_g = 0;
+      init_g = 1.0;
       init_b = 0;
   }
 }
@@ -285,9 +285,6 @@ void set_particle(Particle *particle)
   particle->a_x = 0;
   particle->a_y = 0;
   particle->a_z = 0;
-  particle->g_x = 0;
-  particle->g_y = gravity;
-  particle->g_z = 0;
 }
 
 // initialize new particles
@@ -440,14 +437,14 @@ void display()
       particles[i].y1 = particles[i].y;
       particles[i].z1 = particles[i].z;
 
-      particles[i].x += particles[i].v_x * TICK_OF_TIME + 0.5 * (particles[i].a_x + particles[i].g_x) * TICK_OF_TIME * TICK_OF_TIME;
-      particles[i].y += particles[i].v_y * TICK_OF_TIME + 0.5 * (particles[i].a_y + particles[i].g_y) * TICK_OF_TIME * TICK_OF_TIME;
-      particles[i].z += particles[i].v_z * TICK_OF_TIME + 0.5 * (particles[i].a_z + particles[i].g_z) * TICK_OF_TIME * TICK_OF_TIME;
+      particles[i].x += particles[i].v_x * TICK_OF_TIME + 0.5 * particles[i].a_x * TICK_OF_TIME * TICK_OF_TIME;
+      particles[i].y += particles[i].v_y * TICK_OF_TIME + 0.5 * (particles[i].a_y + gravity) * TICK_OF_TIME * TICK_OF_TIME;
+      particles[i].z += particles[i].v_z * TICK_OF_TIME + 0.5 * particles[i].a_z * TICK_OF_TIME * TICK_OF_TIME;
 
       // update speed
-      particles[i].v_x += (particles[i].a_x + particles[i].g_x) * TICK_OF_TIME;
-      particles[i].v_y += (particles[i].a_y + particles[i].g_y) * TICK_OF_TIME;
-      particles[i].v_z += (particles[i].a_z + particles[i].g_z) * TICK_OF_TIME;
+      particles[i].v_x += particles[i].a_x * TICK_OF_TIME;
+      particles[i].v_y += (particles[i].a_y + gravity) * TICK_OF_TIME;
+      particles[i].v_z += particles[i].a_z * TICK_OF_TIME;
 
       // update lifetime
       particles[i].life -= particles[i].fade;
