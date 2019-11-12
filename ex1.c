@@ -267,14 +267,14 @@ void loadtextures()
   }
 }
 
-void set_particle(Particle *particle)
+void set_particle(Particle *particle, float x, float y, float z)
 {
   particle->active = 1;
   particle->life = 1.0f;
   particle->fade = fade;
-  particle->x = 0;
-  particle->y = 0;
-  particle->z = 0;
+  particle->x = x;
+  particle->y = y;
+  particle->z = z;
   particle->x1 = 0;
   particle->y1 = 0;
   particle->z1 = 0;
@@ -301,20 +301,48 @@ void init()
   int init_emit_num = myRandom() * set_num_particles;
   for (int i = 0; i < init_emit_num; i++)
   {
-    set_particle(particles+i);
+    set_particle(particles+i, 0, 0, 0);
   }
 }
 
 // consequtive emission
 void emit()
 {
+  float x = 0, y = 0, z = 0;
+  float rd = myRandom();
+  if (rd < 0.2) 
+  {
+    x = -50;
+    z = -50;
+  }
+  else if (rd > 0.2 && rd < 0.4)
+  {
+    x = 50;
+    z = 50;
+  }
+  else if (rd > 0.4 && rd < 0.6)
+  {
+    x = 0;
+    z = 0;
+  }
+  else if (rd > 0.6 && rd < 0.8)
+  {
+    x = 50;
+    z = -50;
+  }
+  else
+  {
+    x = -50;
+    z = 50;
+  }
+  
   for (int i = 0; i < set_num_particles; i++)
   {
     if (particles[i].active == 0)
     {
       if (myRandom() > 0.5)
       {
-        set_particle(particles+i);
+        set_particle(particles+i, x, y, z);
       }
     }
   }
