@@ -48,6 +48,23 @@
      * [x] alpha value to show transparency
      * [ ] Others
 6. Conduct Experiments to Explore Performance
+   * [x] experiment with number of particles: 100->1000->10000->100000->1000000, what's the effect?
+     * 100 and 1000 are completely smooth.
+     * 10,000 become slower but acceptable.
+     * 100,000 are becoming really slow, but you can see them moving.
+     * 1,000,000 are kind of "dangerous" for my computer, my computer is getting stuck.
+     * Opengl uses only 1 core of my CPU, which kind of limit the performance.
+   * [x] enable and disable different parts of the system and understand how they contribute to the overall performance
+     * measure performance of the "physics" vs. "rendering"
+       * obviously, rendering costs much more than physical calculations.
+7. Sophistication and Flair
+   * [ ] Multiple particle sources
+   * [ ] Support different viewpoints of the world, or being able to fly around the scene
+   * [x] Textured particles
+   * [ ] Interactions between particles
+   * [ ] Animated "fly-throughs" of the scene
+   * [ ] Interactions between particles and other objects in the world
+   * [ ] GPU-based particle rendering
 
 ## Marking Scheme
 

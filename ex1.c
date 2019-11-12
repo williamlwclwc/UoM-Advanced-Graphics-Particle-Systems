@@ -55,7 +55,7 @@ GLfloat init_g = 1.0;
 GLfloat init_b = 0;
 GLfloat gravity = -0.9;
 GLfloat fade = 0.005;
-GLfloat set_num_particles = 100;
+GLfloat set_num_particles = 250;
 
 unsigned char *data;
 
@@ -159,16 +159,22 @@ void processNumberMenu(int menuentry)
   switch(menuentry)
   {
     case 1:
-      set_num_particles = 5000;
+      set_num_particles = 25;
       break;
     case 2:
-      set_num_particles = 100;
+      set_num_particles = 250;
       break;
     case 3:
-      set_num_particles = 20;
+      set_num_particles = 2500;
+      break;
+    case 4:
+      set_num_particles = 25000;
+      break;
+    case 5:
+      set_num_particles = 250000;
       break;
     default:
-      set_num_particles = 100;
+      set_num_particles = 250;
   }
 }
 
@@ -195,9 +201,11 @@ void init_menu()
   glutAddMenuEntry("short", 3);
 
   int numberMenu = glutCreateMenu(processNumberMenu);
-  glutAddMenuEntry("5000", 1);
-  glutAddMenuEntry("100", 2);
-  glutAddMenuEntry("20", 3);
+  glutAddMenuEntry("100", 1);
+  glutAddMenuEntry("1000", 2);
+  glutAddMenuEntry("10,000", 3);
+  glutAddMenuEntry("100,000", 4);
+  glutAddMenuEntry("1,000,000", 5);
 
   glutCreateMenu(processMainMenu);
   glutAddSubMenu("Initial velocity of particles", velocityMenu);
