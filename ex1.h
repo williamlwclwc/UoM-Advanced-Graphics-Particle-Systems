@@ -6,6 +6,11 @@
 #define RUN_SPEED  1.6 * 10
 #define TURN_ANGLE 4.0
 
+#define OBLIQUE_VIEW 1
+#define FRONT_VIEW 2
+#define TOP_VIEW 3
+#define SHIP_VIEW 4
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 

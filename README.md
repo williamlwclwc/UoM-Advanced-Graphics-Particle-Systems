@@ -58,12 +58,12 @@
      * measure performance of the "physics" vs. "rendering"
        * obviously, rendering costs much more than physical calculations.
 7. Sophistication and Flair
-   * [ ] Multiple particle sources
-   * [ ] Support different viewpoints of the world, or being able to fly around the scene
+   * [x] Multiple particle sources
+   * [x] Support different viewpoints of the world, or being able to fly around the scene
    * [x] Textured particles
    * [ ] Interactions between particles
    * [ ] Animated "fly-throughs" of the scene
-   * [ ] Interactions between particles and other objects in the world
+   * [x] Interactions between particles and other objects in the world
    * [ ] GPU-based particle rendering
 
 ## Marking Scheme

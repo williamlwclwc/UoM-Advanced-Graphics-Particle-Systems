@@ -25,6 +25,7 @@
 #endif
 
 Particle particles[MAX_PARTICLES];
+Particle sm_particles[MAX_PARTICLES];
 
 // Display list for coordinate axis 
 GLuint axisList;
@@ -44,7 +45,9 @@ double myRandom()
 
 GLdouble lat = 0, lon = 0;
 GLfloat dir_x, dir_y, dir_z;
-GLfloat eyex = 0.0, eyey = 0.0, eyez = -1000.0;
+GLfloat eyex = 0.0, eyey = 0.0, eyez = 0.0;
+
+int current_view = OBLIQUE_VIEW;
 
 // particle parameters
 GLfloat init_vx = 10;
@@ -57,7 +60,8 @@ GLfloat gravity = -0.9;
 GLfloat fade = 0.005;
 GLfloat set_num_particles = 250;
 
-unsigned char *data;
+unsigned char *data_rock;
+unsigned char *data_ground;
 
 // create menu to control parameters
 void processMainMenu() {}
@@ -178,6 +182,27 @@ void processNumberMenu(int menuentry)
   }
 }
 
+void processViewMenu(int menuentry)
+{
+  switch(menuentry)
+  {
+    case OBLIQUE_VIEW:
+      current_view = OBLIQUE_VIEW;
+      break;
+    case FRONT_VIEW:
+      current_view = FRONT_VIEW;
+      break;
+    case TOP_VIEW:
+      current_view = TOP_VIEW;
+      break;
+    case SHIP_VIEW:
+      current_view = SHIP_VIEW;
+      break;
+    default:
+      current_view = OBLIQUE_VIEW;
+  }
+}
+
 void init_menu()
 {
   int velocityMenu = glutCreateMenu(processVelocityMenu);
@@ -207,12 +232,19 @@ void init_menu()
   glutAddMenuEntry("100,000", 4);
   glutAddMenuEntry("1,000,000", 5);
 
+  int viewMenu = glutCreateMenu(processViewMenu);
+  glutAddMenuEntry("Oblique View", OBLIQUE_VIEW);
+  glutAddMenuEntry("Front View", FRONT_VIEW);
+  glutAddMenuEntry("Top View", TOP_VIEW);
+  glutAddMenuEntry("Ship View", SHIP_VIEW);
+
   glutCreateMenu(processMainMenu);
   glutAddSubMenu("Initial velocity of particles", velocityMenu);
   glutAddSubMenu("Initial color of particles", colorMenu);
   glutAddSubMenu("Gravity intensity", gravityMenu);
   glutAddSubMenu("Lifetime of particles", lifetimeMenu);
   glutAddSubMenu("Maximum number of particles", numberMenu);
+  glutAddSubMenu("Change View", viewMenu);
   glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
@@ -220,54 +252,108 @@ void setView()
 {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  // SHIP_VIEW
-  dir_x = 100 * cos(DEG_TO_RAD * lat) * sin(DEG_TO_RAD * lon);
-  dir_y = 100 * sin(DEG_TO_RAD * lat);
-  dir_z = 100 * cos(DEG_TO_RAD * lat) * cos(DEG_TO_RAD * lon);
-  gluLookAt(eyex, eyey, eyez,
-            dir_x + eyex, dir_y + eyey, dir_z + eyez,
+  switch (current_view)
+  {
+  case 1:
+    // oblique view
+    gluLookAt(600.0, 600.0, 600.0,
+            0.0, 0.0, 0.0,
             0.0, 1.0, 0.0);
-
-  // gluLookAt(0.0, 100.0, 1000.0,
-  //           0.0, 0.0, 0.0,
-  //           0.0, 1.0, 0.0);
+    break;
+  case 2:
+    // front view
+    gluLookAt(0.0, 100.0, 1000.0,
+            0.0, 0.0, 0.0,
+            0.0, 1.0, 0.0);
+    break;
+  case 3:
+    // top view
+    gluLookAt(1.0, 600.0, 1.0,
+            0.0, 0.0, 0.0,
+            0.0, 1.0, 0.0);
+    break;
+  case 4:
+    // ship view
+    dir_x = 100 * cos(DEG_TO_RAD * lat) * sin(DEG_TO_RAD * lon);
+    dir_y = 100 * sin(DEG_TO_RAD * lat);
+    dir_z = 100 * cos(DEG_TO_RAD * lat) * cos(DEG_TO_RAD * lon);
+    gluLookAt(eyex, eyey, eyez,
+              dir_x + eyex, dir_y + eyey, dir_z + eyez,
+              0.0, 1.0, 0.0);
+    break;
+  default:
+    // oblique view
+    gluLookAt(600.0, 600.0, 600.0,
+            0.0, 0.0, 0.0,
+            0.0, 1.0, 0.0);
+    break;
+  }
 }
 
 // load texture images
 // according to tutorials: https://learnopengl.com/Getting-started/Textures
 // referencing image loading library stb_image.h: https://github.com/nothings/stb/blob/master/stb_image.h
-unsigned int lava_rock;
+GLuint textures[2];
+
 void loadtextures()
 {
   int width, height, nrChannels;
-  data = stbi_load("lava-rock.jpg", &width, &height, &nrChannels, 0);
-  if(data == NULL) 
+  data_rock = stbi_load("lava-rock.jpg", &width, &height, &nrChannels, 0);
+  if(data_rock == NULL) 
   {
     printf("failed to load texture image\n");
   } 
   else
   {
-    printf("texture loaded\n");
+    printf("texture rock loaded\n");
   }
 
-  glGenTextures(1,&lava_rock);
-  glBindTexture(GL_TEXTURE_2D, lava_rock);
+  int g_width, g_height, gChannels;
+  data_ground = stbi_load("lava-ground.jpg", &g_width, &g_height, &gChannels, 0);
+  if(data_ground == NULL) 
+  {
+    printf("failed to load texture image\n");
+  } 
+  else
+  {
+    printf("texture ground loaded\n");
+  }
+
+  glGenTextures(2, textures);
+
+  glBindTexture(GL_TEXTURE_2D, textures[0]);
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, width,
+            height, 0, GL_RGB,
+            GL_UNSIGNED_BYTE, data_rock);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexImage2D(GL_TEXTURE_2D, 0, 3, width,
-            height, 0, GL_RGB,
-            GL_UNSIGNED_BYTE, data);
+
+  glBindTexture(GL_TEXTURE_2D, textures[1]);
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, g_width,
+            g_height, 0, GL_RGB,
+            GL_UNSIGNED_BYTE, data_ground);
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-  if(data!=NULL)
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+  if(data_rock!=NULL)
   {
-    stbi_image_free(data);
+    stbi_image_free(data_rock);
+  }
+  if(data_ground!=NULL)
+  {
+    stbi_image_free(data_ground);
   }
 }
 
-void set_particle(Particle *particle, float x, float y, float z)
+void set_particle(Particle *particle, float x, float y, float z, int type)
 {
   particle->active = 1;
   particle->life = 1.0f;
@@ -284,12 +370,26 @@ void set_particle(Particle *particle, float x, float y, float z)
   particle->x3 = 0;
   particle->y3 = 0;
   particle->z3 = 0;
-  particle->r = init_r;
-  particle->g = init_g;
-  particle->b = init_b;
-  particle->v_x = (myRandom() - myRandom()) * init_vx;
-  particle->v_y = init_vy + myRandom() * init_vy;
-  particle->v_z = (myRandom() - myRandom()) * init_vz;
+  if (type == 0) 
+  {
+    // main particle
+    particle->r = init_r;
+    particle->g = init_g;
+    particle->b = init_b;
+    particle->v_x = (myRandom() - myRandom()) * init_vx;
+    particle->v_y = init_vy + myRandom() * init_vy;
+    particle->v_z = (myRandom() - myRandom()) * init_vz;
+  }
+  else 
+  {
+    // small particles
+    particle->r = 1;
+    particle->g = 0.5;
+    particle->b = 0;
+    particle->v_x = (myRandom() - myRandom()) * init_vx * 0.8;
+    particle->v_y = myRandom() * init_vy * 0.8;
+    particle->v_z = (myRandom() - myRandom()) * init_vz * 0.8;
+  }
   particle->a_x = 0;
   particle->a_y = 0;
   particle->a_z = 0;
@@ -301,11 +401,11 @@ void init()
   int init_emit_num = myRandom() * set_num_particles;
   for (int i = 0; i < init_emit_num; i++)
   {
-    set_particle(particles+i, 0, 0, 0);
+    set_particle(particles+i, 0, 0, 0, 0);
   }
 }
 
-// consequtive emission
+// consequtive emission (multi-source)
 void emit()
 {
   float x = 0, y = 0, z = 0;
@@ -342,8 +442,27 @@ void emit()
     {
       if (myRandom() > 0.5)
       {
-        set_particle(particles+i, x, y, z);
+        set_particle(particles+i, x, y, z, 0);
       }
+    }
+  }
+}
+
+// if particle reach the ground
+void explode_ground(float x, float y, float z)
+{
+  // emit again near x, y, z
+  int cnt = 0, limit = 4;
+  for (int i = 0; i < set_num_particles; i++)
+  {
+    if (sm_particles[i].active == 0)
+    {
+      set_particle(sm_particles+i, x, y, z, 1);
+      cnt++;
+    }
+    if (cnt == limit)
+    {
+      break;
     }
   }
 }
@@ -356,6 +475,24 @@ void display()
   glClear(GL_COLOR_BUFFER_BIT);
   // If enabled, draw coordinate axis
   if(axisEnabled) glCallList(axisList);
+
+  // display ground
+  glBindTexture(GL_TEXTURE_2D, textures[1]);
+  glEnable(GL_TEXTURE_2D);
+  glColor4ub(255,255,255,255);
+  glNormal3f(0.0f,1.0f,0.0f);
+  float g_size = 500;
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f, 1.0f);
+  glVertex3f(-g_size, 0, g_size);
+  glTexCoord2f(1.0f, 1.0f);
+  glVertex3f(g_size, 0, g_size);
+  glTexCoord2f(1.0f, 0.0f);
+  glVertex3f(g_size, 0, -g_size);
+  glTexCoord2f(0.0f, 0.0f);
+  glVertex3f(-g_size, 0, -g_size);
+  glEnd();
+  glDisable(GL_TEXTURE_2D);
 
   // display particles
   for (int i = 0; i < set_num_particles; i++)
@@ -385,7 +522,7 @@ void display()
         particles[i].r,
         particles[i].g,
         particles[i].b,
-        particles[i].life
+        particles[i].life+0.2
       );
       
       // draw particles
@@ -442,9 +579,9 @@ void display()
       glVertex3f(x3 - size, y3 - size, z3);
       glEnd();
 
-      glBindTexture(GL_TEXTURE_2D, lava_rock);
       glEnable(GL_TEXTURE_2D);
-      glNormal3f(0.0f, 0.0f, 1.0f);
+      glBindTexture(GL_TEXTURE_2D, textures[0]);
+      glNormal3f(0.0f, 1.0f, 0.0f);
 
       size = 8;
       glBegin(GL_QUADS);
@@ -485,8 +622,13 @@ void display()
       // update lifetime
       particles[i].life -= particles[i].fade;
 
+      if (particles[i].y < -1)
+      {
+        explode_ground(x, y, z);
+      }
+
       // if a particle die
-      if (particles[i].y < -1 || particles[i].life < 0)
+      if (y < -1 || particles[i].life < 0)
       {
         particles[i].x = 0;
         particles[i].y = 0;
@@ -498,6 +640,57 @@ void display()
       if (num_active < set_num_particles / 4)
       {
         emit();
+      }
+    }
+  }
+
+  // display interaction with ground particles
+  for (int i = 0; i < set_num_particles; i++)
+  {
+    // render active particles
+    if (sm_particles[i].active == 1)
+    {
+      // current position of particle i
+      float x = sm_particles[i].x;
+      float y = sm_particles[i].y;
+      float z = sm_particles[i].z;
+    
+      // set particles' color
+      glColor4f(
+        sm_particles[i].r,
+        sm_particles[i].g,
+        sm_particles[i].b,
+        sm_particles[i].life
+      );
+      
+      // draw particles
+
+      // simple render particles as points
+
+      glPointSize(3.0f);
+      glBegin(GL_POINTS);
+      glVertex3f(x, y, z);
+      glEnd();
+
+      sm_particles[i].x += sm_particles[i].v_x * TICK_OF_TIME + 0.5 * sm_particles[i].a_x * TICK_OF_TIME * TICK_OF_TIME;
+      sm_particles[i].y += sm_particles[i].v_y * TICK_OF_TIME + 0.5 * (sm_particles[i].a_y + gravity) * TICK_OF_TIME * TICK_OF_TIME;
+      sm_particles[i].z += sm_particles[i].v_z * TICK_OF_TIME + 0.5 * sm_particles[i].a_z * TICK_OF_TIME * TICK_OF_TIME;
+
+      // update speed
+      sm_particles[i].v_x += sm_particles[i].a_x * TICK_OF_TIME;
+      sm_particles[i].v_y += (sm_particles[i].a_y + gravity) * TICK_OF_TIME;
+      sm_particles[i].v_z += sm_particles[i].a_z * TICK_OF_TIME;
+
+      // update lifetime
+      sm_particles[i].life -= sm_particles[i].fade;
+
+      // if a particle die
+      if (y < 0)
+      {
+        sm_particles[i].x = 0;
+        sm_particles[i].y = 0;
+        sm_particles[i].z = 0;
+        sm_particles[i].active = 0;
       }
     }
   }
@@ -656,8 +849,9 @@ void initGraphics(int argc, char *argv[])
   glutReshapeFunc(reshape);
   loadtextures();
   init_menu();
+  // activate alpha value
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable( GL_BLEND );
+  glEnable(GL_BLEND);
   makeAxes();
   init();
 }
