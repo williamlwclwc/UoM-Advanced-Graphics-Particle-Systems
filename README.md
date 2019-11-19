@@ -47,7 +47,7 @@
      * [x] Render as a little billboarded sprite using GL_QUADS
      * [x] alpha value to show transparency
      * [x] textured quads
-     * ~~ [ ] Others ~~
+     * ~~[ ] Others~~
 6. Conduct Experiments to Explore Performance
    * [x] experiment with number of particles: 100->1000->10000->100000->1000000, what's the effect?
      * 100 and 1000 are completely smooth.
@@ -62,10 +62,10 @@
    * [x] Multiple particle sources
    * [x] Support different viewpoints of the world, or being able to fly around the scene
    * [x] Textured particles
-   * ~~ [ ] Interactions between particles ~~
-   * ~~ [ ] Animated "fly-throughs" of the scene ~~
+   * ~~[ ] Interactions between particles~~
+   * ~~[ ] Animated "fly-throughs" of the scene~~
    * [x] Interactions between particles and other objects in the world
-   * ~~ [ ] GPU-based particle rendering ~~
+   * ~~[ ] GPU-based particle rendering~~
 
 ## Marking Scheme
 
@@ -78,21 +78,26 @@
    * [x] 2+ different particles properties(e.g. life, velocity) (1 mark)
    * [x] 1+ world property(e.g. gravity or wind) (1 mark)
 4. Analysis of the fidelity of chosen laws of motion
-   * [ ] describe what the laws of motion are intended to be and demonstrate that the particles roughly follow those (1 mark)
-   * [ ] describe informally how accurate the laws of motion are simulated (1 mark)
+   * [x] describe what the laws of motion are intended to be and demonstrate that the particles roughly follow those (1 mark)
+     * projectile motion, each particle has a initial speed, and affect by gravity
+   * [x] describe informally how accurate the laws of motion are simulated (1 mark)
+     * accurately calculated with law of motion, but does not consider wind or air resistance
    * [ ] describe with specific data how accurate the laws of the motions are simulated (1 mark)
 5. Efficiency of your approach to implement chosen laws of motion
    * [ ] any evidence that efficiently has been thought of (1 mark)
    * [ ] evidence of thinking about efficiency and what measures could be taken to improve it, or a solid argument as to why there is no possible way of improving it (1 mark)
    * [ ] demonstrating that specific measures to improve or maximise efficiency have been implemented (1 mark)
 6. Analysis of overall performance / rendering speed and discussion of efficiencies implemented
-   * [ ] sensible discussion of how performance is bound by the limitations of data structures/CPU/use of GPU/transfer of data between CPU-GPU (1 mark)
-   * [ ] evidence of exploring performance/rendering bounds by performing experiments (1 mark)
+   * [x] sensible discussion of how performance is bound by the limitations of data structures/CPU/use of GPU/transfer of data between CPU-GPU (1 mark)
+     * when there are a large number of particles, there is only a CPU core working 100% and the other 3 are idle, if openGL can use multi-thread rendering, the performance can increase
+     * using a decent GPU can make the rendering process parallel
+   * [x] evidence of exploring performance/rendering bounds by performing experiments (1 mark)
+     * we can see CPU core reached 100% by setting number of particles to 10,000
    * [ ] analysis/discussion supported by some data (1 mark)
-   * [ ] rigorous performance analysis supported by graphs or other data visulisations
+   * [ ] rigorous performance analysis supported by graphs or other data visulisations (e.g. paricle number vs. framerates) (1 mark)
 7. Sophistication and flair
    * [x] demonstrating 2 different things from the list in Task 7 (2 mark)
-   * ~~ [ ] or one super-thing that is impressive ~~
+   * ~~[ ] or one super-thing that is impressive~~
 
 ## How to run
 

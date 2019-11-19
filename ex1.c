@@ -256,7 +256,7 @@ void setView()
   {
   case 1:
     // oblique view
-    gluLookAt(600.0, 600.0, 600.0,
+    gluLookAt(1000.0, 1000.0, 1000.0,
             0.0, 0.0, 0.0,
             0.0, 1.0, 0.0);
     break;
@@ -268,7 +268,7 @@ void setView()
     break;
   case 3:
     // top view
-    gluLookAt(1.0, 600.0, 1.0,
+    gluLookAt(1.0, 1200.0, 1.0,
             0.0, 0.0, 0.0,
             0.0, 1.0, 0.0);
     break;
@@ -409,32 +409,26 @@ void init()
 void emit()
 {
   float x = 0, y = 0, z = 0;
-  float rd = myRandom();
-  if (rd < 0.2) 
+  int p_or_n;
+  if (myRandom() > 0.5)
   {
-    x = -50;
-    z = -50;
-  }
-  else if (rd > 0.2 && rd < 0.4)
-  {
-    x = 50;
-    z = 50;
-  }
-  else if (rd > 0.4 && rd < 0.6)
-  {
-    x = 0;
-    z = 0;
-  }
-  else if (rd > 0.6 && rd < 0.8)
-  {
-    x = 50;
-    z = -50;
+    p_or_n = 1;
   }
   else
   {
-    x = -50;
-    z = 50;
+    p_or_n = -1;
   }
+  x = p_or_n * myRandom() * 100;
+
+  if (myRandom() > 0.5)
+  {
+    p_or_n = 1;
+  }
+  else
+  {
+    p_or_n = -1;
+  }
+  z = p_or_n * myRandom() * 100;
   
   for (int i = 0; i < set_num_particles; i++)
   {
@@ -479,18 +473,17 @@ void display()
   // display ground
   glBindTexture(GL_TEXTURE_2D, textures[1]);
   glEnable(GL_TEXTURE_2D);
-  glColor4ub(255,255,255,255);
   glNormal3f(0.0f,1.0f,0.0f);
-  float g_size = 500;
+  float g_size = 800;
   glBegin(GL_QUADS);
   glTexCoord2f(0.0f, 1.0f);
-  glVertex3f(-g_size, 0, g_size);
+  glVertex3f(-g_size, -1, g_size);
   glTexCoord2f(1.0f, 1.0f);
-  glVertex3f(g_size, 0, g_size);
+  glVertex3f(g_size, -1, g_size);
   glTexCoord2f(1.0f, 0.0f);
-  glVertex3f(g_size, 0, -g_size);
+  glVertex3f(g_size, -1, -g_size);
   glTexCoord2f(0.0f, 0.0f);
-  glVertex3f(-g_size, 0, -g_size);
+  glVertex3f(-g_size, -1, -g_size);
   glEnd();
   glDisable(GL_TEXTURE_2D);
 
@@ -610,9 +603,13 @@ void display()
       particles[i].y1 = particles[i].y;
       particles[i].z1 = particles[i].z;
 
-      particles[i].x += particles[i].v_x * TICK_OF_TIME + 0.5 * particles[i].a_x * TICK_OF_TIME * TICK_OF_TIME;
-      particles[i].y += particles[i].v_y * TICK_OF_TIME + 0.5 * (particles[i].a_y + gravity) * TICK_OF_TIME * TICK_OF_TIME;
-      particles[i].z += particles[i].v_z * TICK_OF_TIME + 0.5 * particles[i].a_z * TICK_OF_TIME * TICK_OF_TIME;
+      // particles[i].x += particles[i].v_x * TICK_OF_TIME + 0.5 * particles[i].a_x * TICK_OF_TIME * TICK_OF_TIME;
+      // particles[i].y += particles[i].v_y * TICK_OF_TIME + 0.5 * (particles[i].a_y + gravity) * TICK_OF_TIME * TICK_OF_TIME;
+      // particles[i].z += particles[i].v_z * TICK_OF_TIME + 0.5 * particles[i].a_z * TICK_OF_TIME * TICK_OF_TIME;
+
+      particles[i].x += (particles[i].v_x + 0.5 * particles[i].a_x * TICK_OF_TIME) * TICK_OF_TIME;
+      particles[i].y += (particles[i].v_y + 0.5 * (particles[i].a_y + gravity) * TICK_OF_TIME) * TICK_OF_TIME;
+      particles[i].z += (particles[i].v_z + 0.5 * particles[i].a_z * TICK_OF_TIME) * TICK_OF_TIME;
 
       // update speed
       particles[i].v_x += particles[i].a_x * TICK_OF_TIME;
@@ -622,14 +619,10 @@ void display()
       // update lifetime
       particles[i].life -= particles[i].fade;
 
-      if (particles[i].y < -1)
-      {
-        explode_ground(x, y, z);
-      }
-
       // if a particle die
       if (y < -1 || particles[i].life < 0)
       {
+        explode_ground(x, y, z);
         particles[i].x = 0;
         particles[i].y = 0;
         particles[i].z = 0;
@@ -672,9 +665,13 @@ void display()
       glVertex3f(x, y, z);
       glEnd();
 
-      sm_particles[i].x += sm_particles[i].v_x * TICK_OF_TIME + 0.5 * sm_particles[i].a_x * TICK_OF_TIME * TICK_OF_TIME;
-      sm_particles[i].y += sm_particles[i].v_y * TICK_OF_TIME + 0.5 * (sm_particles[i].a_y + gravity) * TICK_OF_TIME * TICK_OF_TIME;
-      sm_particles[i].z += sm_particles[i].v_z * TICK_OF_TIME + 0.5 * sm_particles[i].a_z * TICK_OF_TIME * TICK_OF_TIME;
+      // sm_particles[i].x += sm_particles[i].v_x * TICK_OF_TIME + 0.5 * sm_particles[i].a_x * TICK_OF_TIME * TICK_OF_TIME;
+      // sm_particles[i].y += sm_particles[i].v_y * TICK_OF_TIME + 0.5 * (sm_particles[i].a_y + gravity) * TICK_OF_TIME * TICK_OF_TIME;
+      // sm_particles[i].z += sm_particles[i].v_z * TICK_OF_TIME + 0.5 * sm_particles[i].a_z * TICK_OF_TIME * TICK_OF_TIME;
+
+      sm_particles[i].x += (sm_particles[i].v_x + 0.5 * sm_particles[i].a_x * TICK_OF_TIME) * TICK_OF_TIME;
+      sm_particles[i].y += (sm_particles[i].v_y + 0.5 * (sm_particles[i].a_y + gravity) * TICK_OF_TIME) * TICK_OF_TIME;
+      sm_particles[i].z += (sm_particles[i].v_z + 0.5 * sm_particles[i].a_z * TICK_OF_TIME) * TICK_OF_TIME;
 
       // update speed
       sm_particles[i].v_x += sm_particles[i].a_x * TICK_OF_TIME;
