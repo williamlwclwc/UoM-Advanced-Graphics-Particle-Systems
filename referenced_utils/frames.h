@@ -58,11 +58,6 @@
       glutSwapBuffers();
     }
 *****************************************/
-#ifdef MACOSX
-  #include <GLUT/glut.h>
-#else
-  #include <GL/glut.h>
-#endif
 
 #ifndef __WIN32__
 #include <sys/time.h>
