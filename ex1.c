@@ -95,12 +95,16 @@ void display()
       
       draw_particles(i);
 
-      // // auto emission, wrong place, not efficient
-      // if (num_active < set_num_particles / 4)
-      // {
-      //   emit();
-      // }
+      if(low_efficiency == 1)
+      {
+        // auto emission, wrong place, not efficient
+        if (num_active < set_num_particles / 4)
+        {
+          emit();
+        }
+      }
     }
+    
     // display explosion particles
     // render active particles
     if (sm_particles[i].active == 1)
@@ -109,10 +113,13 @@ void display()
     }
   }
 
-  // auto emission
-  if (num_active < set_num_particles / 2)
+  if(low_efficiency == 0)
   {
-    emit();
+    // auto emission
+    if (num_active < set_num_particles / 2)
+    {
+      emit();
+    }
   }
 
   frameEnd(GLUT_BITMAP_HELVETICA_10, 1.0, 1.0, 1.0, 0.05, 0.95);

@@ -39,6 +39,7 @@ GLfloat dir_x, dir_y, dir_z;
 GLfloat eyex = 0.0, eyey = 0.0, eyez = 0.0;
 
 int current_view = OBLIQUE_VIEW;
+int low_efficiency = 0;
 
 // particle parameters
 GLfloat init_vx = 10;

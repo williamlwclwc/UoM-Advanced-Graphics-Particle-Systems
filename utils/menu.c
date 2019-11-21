@@ -149,6 +149,21 @@ void processViewMenu(int menuentry)
   }
 }
 
+void processEffMenu(int menuentry)
+{
+  switch(menuentry)
+  {
+    case 0:
+      low_efficiency = 0;
+      break;
+    case 1:
+      low_efficiency = 1;
+      break;
+    default:
+      low_efficiency = 0;
+  }
+}
+
 void init_menu()
 {
   int velocityMenu = glutCreateMenu(processVelocityMenu);
@@ -184,6 +199,10 @@ void init_menu()
   glutAddMenuEntry("Top View", TOP_VIEW);
   glutAddMenuEntry("Ship View", SHIP_VIEW);
 
+  int effMenu = glutCreateMenu(processEffMenu);
+  glutAddMenuEntry("High Efficiency Mode", 0);
+  glutAddMenuEntry("Low Efficiency Mode", 1);
+
   glutCreateMenu(processMainMenu);
   glutAddSubMenu("Initial velocity of particles", velocityMenu);
   glutAddSubMenu("Initial color of particles", colorMenu);
@@ -191,5 +210,6 @@ void init_menu()
   glutAddSubMenu("Lifetime of particles", lifetimeMenu);
   glutAddSubMenu("Maximum number of particles", numberMenu);
   glutAddSubMenu("Change View", viewMenu);
+  glutAddSubMenu("Check Efficiency Improvement", effMenu);
   glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
