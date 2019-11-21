@@ -1,7 +1,6 @@
 #define MAX_PARTICLES 250001
 #define TICK_OF_TIME 0.3
 
-#define MILLION 1000000
 #define DEG_TO_RAD 0.01745329
 #define RUN_SPEED  1.6 * 10
 #define TURN_ANGLE 4.0
@@ -11,8 +10,12 @@
 #define TOP_VIEW 3
 #define SHIP_VIEW 4
 
+// according to tutorials: https://learnopengl.com/Getting-started/Textures
+// referencing image loading library stb_image.h: https://github.com/nothings/stb/blob/master/stb_image.h
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+#include "frames.h" // referenced from UoM OpenGL Wiki
 
 typedef struct
 {

@@ -357,7 +357,6 @@ void set_particle(Particle *particle, float x, float y, float z, int type)
 {
   particle->active = 1;
   particle->life = 1.0f;
-  particle->fade = fade;
   particle->x = x;
   particle->y = y;
   particle->z = z;
@@ -373,6 +372,7 @@ void set_particle(Particle *particle, float x, float y, float z, int type)
   if (type == 0) 
   {
     // main particle
+    particle->fade = fade;
     particle->r = init_r;
     particle->g = init_g;
     particle->b = init_b;
@@ -383,6 +383,7 @@ void set_particle(Particle *particle, float x, float y, float z, int type)
   else 
   {
     // small particles
+    particle->fade = fade*2;
     particle->r = 1;
     particle->g = 0.5;
     particle->b = 0;
@@ -410,32 +411,32 @@ void emit()
 {
   float x = 0, y = 0, z = 0;
   int p_or_n;
-  if (myRandom() > 0.5)
-  {
-    p_or_n = 1;
-  }
-  else
-  {
-    p_or_n = -1;
-  }
-  x = p_or_n * myRandom() * 100;
-
-  if (myRandom() > 0.5)
-  {
-    p_or_n = 1;
-  }
-  else
-  {
-    p_or_n = -1;
-  }
-  z = p_or_n * myRandom() * 100;
   
   for (int i = 0; i < set_num_particles; i++)
   {
     if (particles[i].active == 0)
     {
-      if (myRandom() > 0.5)
+      if (myRandom() > 0.9)
       {
+        if (myRandom() > 0.5)
+        {
+          p_or_n = 1;
+        }
+        else
+        {
+          p_or_n = -1;
+        }
+        x = p_or_n * myRandom() * 200;
+
+        if (myRandom() > 0.5)
+        {
+          p_or_n = 1;
+        }
+        else
+        {
+          p_or_n = -1;
+        }
+        z = p_or_n * myRandom() * 200;
         set_particle(particles+i, x, y, z, 0);
       }
     }
@@ -467,6 +468,9 @@ void display()
   // Clear the screen
   glClearColor(0, 0, 0, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
+  
+  frameStart();
+  
   // If enabled, draw coordinate axis
   if(axisEnabled) glCallList(axisList);
 
@@ -487,10 +491,11 @@ void display()
   glEnd();
   glDisable(GL_TEXTURE_2D);
 
+  int num_active = 0;
+
   // display particles
   for (int i = 0; i < set_num_particles; i++)
   {
-    int num_active = 0;
     // render active particles
     if (particles[i].active == 1)
     {
@@ -620,8 +625,12 @@ void display()
       particles[i].life -= particles[i].fade;
 
       // if a particle die
-      if (y < -1 || particles[i].life < 0)
+      if (y < 0 || particles[i].life < 0)
       {
+        if (y < 0)
+        {
+          y = 0;
+        }
         explode_ground(x, y, z);
         particles[i].x = 0;
         particles[i].y = 0;
@@ -629,68 +638,73 @@ void display()
         particles[i].active = 0;
       }
 
-      // auto emission
-      if (num_active < set_num_particles / 4)
+      // display explosion particles
+      // render active particles
+      if (sm_particles[i].active == 1)
       {
-        emit();
-      }
-    }
-  }
-
-  // display interaction with ground particles
-  for (int i = 0; i < set_num_particles; i++)
-  {
-    // render active particles
-    if (sm_particles[i].active == 1)
-    {
-      // current position of particle i
-      float x = sm_particles[i].x;
-      float y = sm_particles[i].y;
-      float z = sm_particles[i].z;
-    
-      // set particles' color
-      glColor4f(
-        sm_particles[i].r,
-        sm_particles[i].g,
-        sm_particles[i].b,
-        sm_particles[i].life
-      );
+        // current position of particle i
+        float x = sm_particles[i].x;
+        float y = sm_particles[i].y;
+        float z = sm_particles[i].z;
       
-      // draw particles
+        // set particles' color
+        glColor4f(
+          sm_particles[i].r,
+          sm_particles[i].g,
+          sm_particles[i].b,
+          sm_particles[i].life
+        );
+        
+        // draw particles
 
-      // simple render particles as points
+        // simple render particles as points
 
-      glPointSize(3.0f);
-      glBegin(GL_POINTS);
-      glVertex3f(x, y, z);
-      glEnd();
+        glPointSize(3.0f);
+        glBegin(GL_POINTS);
+        glVertex3f(x, y, z);
+        glEnd();
 
-      // sm_particles[i].x += sm_particles[i].v_x * TICK_OF_TIME + 0.5 * sm_particles[i].a_x * TICK_OF_TIME * TICK_OF_TIME;
-      // sm_particles[i].y += sm_particles[i].v_y * TICK_OF_TIME + 0.5 * (sm_particles[i].a_y + gravity) * TICK_OF_TIME * TICK_OF_TIME;
-      // sm_particles[i].z += sm_particles[i].v_z * TICK_OF_TIME + 0.5 * sm_particles[i].a_z * TICK_OF_TIME * TICK_OF_TIME;
+        // sm_particles[i].x += sm_particles[i].v_x * TICK_OF_TIME + 0.5 * sm_particles[i].a_x * TICK_OF_TIME * TICK_OF_TIME;
+        // sm_particles[i].y += sm_particles[i].v_y * TICK_OF_TIME + 0.5 * (sm_particles[i].a_y + gravity) * TICK_OF_TIME * TICK_OF_TIME;
+        // sm_particles[i].z += sm_particles[i].v_z * TICK_OF_TIME + 0.5 * sm_particles[i].a_z * TICK_OF_TIME * TICK_OF_TIME;
 
-      sm_particles[i].x += (sm_particles[i].v_x + 0.5 * sm_particles[i].a_x * TICK_OF_TIME) * TICK_OF_TIME;
-      sm_particles[i].y += (sm_particles[i].v_y + 0.5 * (sm_particles[i].a_y + gravity) * TICK_OF_TIME) * TICK_OF_TIME;
-      sm_particles[i].z += (sm_particles[i].v_z + 0.5 * sm_particles[i].a_z * TICK_OF_TIME) * TICK_OF_TIME;
+        sm_particles[i].x += (sm_particles[i].v_x + 0.5 * sm_particles[i].a_x * TICK_OF_TIME) * TICK_OF_TIME;
+        sm_particles[i].y += (sm_particles[i].v_y + 0.5 * (sm_particles[i].a_y + gravity) * TICK_OF_TIME) * TICK_OF_TIME;
+        sm_particles[i].z += (sm_particles[i].v_z + 0.5 * sm_particles[i].a_z * TICK_OF_TIME) * TICK_OF_TIME;
 
-      // update speed
-      sm_particles[i].v_x += sm_particles[i].a_x * TICK_OF_TIME;
-      sm_particles[i].v_y += (sm_particles[i].a_y + gravity) * TICK_OF_TIME;
-      sm_particles[i].v_z += sm_particles[i].a_z * TICK_OF_TIME;
+        // update speed
+        sm_particles[i].v_x += sm_particles[i].a_x * TICK_OF_TIME;
+        sm_particles[i].v_y += (sm_particles[i].a_y + gravity) * TICK_OF_TIME;
+        sm_particles[i].v_z += sm_particles[i].a_z * TICK_OF_TIME;
 
-      // update lifetime
-      sm_particles[i].life -= sm_particles[i].fade;
+        // update lifetime
+        sm_particles[i].life -= sm_particles[i].fade;
 
-      // if a particle die
-      if (y < 0)
-      {
-        sm_particles[i].x = 0;
-        sm_particles[i].y = 0;
-        sm_particles[i].z = 0;
-        sm_particles[i].active = 0;
+        // if a particle die
+        if (y < 0)
+        {
+          sm_particles[i].x = 0;
+          sm_particles[i].y = 0;
+          sm_particles[i].z = 0;
+          sm_particles[i].active = 0;
+        }
       }
+
+      // // auto emission, wrong place, not efficient
+      // if (num_active < set_num_particles / 4)
+      // {
+      //   emit();
+      // }
     }
   }
+
+  // auto emission
+  if (num_active < set_num_particles / 2)
+  {
+    emit();
+  }
+
+  frameEnd(GLUT_BITMAP_HELVETICA_10, 1.0, 1.0, 1.0, 0.05, 0.95);
 
   glutSwapBuffers();
   glutPostRedisplay();
