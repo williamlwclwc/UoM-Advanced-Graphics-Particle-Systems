@@ -26,7 +26,7 @@ void setView()
     break;
   case 2:
     // front view
-    gluLookAt(0.0, 100.0, 1000.0,
+    gluLookAt(0.0, 100.0, 1200.0,
             0.0, 0.0, 0.0,
             0.0, 1.0, 0.0);
     break;
