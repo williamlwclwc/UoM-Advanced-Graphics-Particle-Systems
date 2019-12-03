@@ -94,7 +94,7 @@
    * [x] evidence of exploring performance/rendering bounds by performing experiments (1 mark)
      * we can see CPU core reached 100% by setting number of particles to 10,000
    * [x] analysis/discussion supported by some data (1 mark)
-   * [ ] rigorous performance analysis supported by graphs or other data visulisations (e.g. paricle number vs. framerates) (1 mark)
+   * [x] rigorous performance analysis supported by graphs or other data visulisations (e.g. paricle number vs. framerates) (1 mark)
 7. Sophistication and flair
    * [x] demonstrating 2 different things from the list in Task 7 (2 mark)
    * ~~[ ] or one super-thing that is impressive~~

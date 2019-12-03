@@ -105,7 +105,7 @@ void emit()
   {
     if (particles[i].active == 0 && cnt_particles < set_num_particles)
     {
-      if (myRandom() > 0.9)
+      if (myRandom() > 0.5)
       {
         if (myRandom() > 0.5)
         {
@@ -142,7 +142,7 @@ void explode_ground(float x, float y, float z)
   {
     if (sm_particles[i].active == 0)
     {
-      cnt_particles++;
+      // cnt_particles++;
       set_particle(sm_particles+i, x, y, z, 1);
       cnt++;
     }
@@ -403,7 +403,7 @@ void draw_sm_particles(int i)
   // if a particle die
   if (y < 0 || sm_particles[i].life < 0)
   {
-    cnt_particles--;
+    // cnt_particles--;
     sm_particles[i].x = 0;
     sm_particles[i].y = 0;
     sm_particles[i].z = 0;

@@ -90,9 +90,9 @@ void display()
   {
     // render active particles
     if (particles[i].active == 1)
-    {
+    { 
       num_active++;
-      
+
       draw_particles(i);
 
       if(low_efficiency == 1)
@@ -121,7 +121,7 @@ void display()
       emit();
     }
   }
-
+  
   float cur_fps = frameEnd(GLUT_BITMAP_HELVETICA_10, 1.0, 1.0, 1.0, 0.05, 0.95);
   fps[fps_index] = cur_fps;
   num_of_particles[fps_index] = cnt_particles;
@@ -154,7 +154,7 @@ void keyboard(unsigned char key, int x, int y)
       fp = fopen("data/fps_data.txt", "w+");
       for(int i = 0; i < fps_length; i++)
       {
-        fprintf(fp, "%.2f, %d\n", fps[i], num_of_particles[i]);
+        fprintf(fp, "%d, %.2f\n", num_of_particles[i], fps[i]);
       }
       printf("%d\n", fps_length);
       fclose(fp);
