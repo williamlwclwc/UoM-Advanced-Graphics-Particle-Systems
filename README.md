@@ -84,16 +84,16 @@
      * accurately calculated with law of motion, but does not consider wind or air resistance
    * [ ] describe with specific data how accurate the laws of the motions are simulated (1 mark)
 5. Efficiency of your approach to implement chosen laws of motion
-   * [ ] any evidence that efficiently has been thought of (1 mark)
-   * [ ] evidence of thinking about efficiency and what measures could be taken to improve it, or a solid argument as to why there is no possible way of improving it (1 mark)
-   * [ ] demonstrating that specific measures to improve or maximise efficiency have been implemented (1 mark)
+   * [x] any evidence that efficiently has been thought of (1 mark)
+   * [x] evidence of thinking about efficiency and what measures could be taken to improve it, or a solid argument as to why there is no possible way of improving it (1 mark)
+   * [x] demonstrating that specific measures to improve or maximise efficiency have been implemented (1 mark)
 6. Analysis of overall performance / rendering speed and discussion of efficiencies implemented
    * [x] sensible discussion of how performance is bound by the limitations of data structures/CPU/use of GPU/transfer of data between CPU-GPU (1 mark)
      * when there are a large number of particles, there is only a CPU core working 100% and the other 3 are idle, if openGL can use multi-thread rendering, the performance can increase
      * using a decent GPU can make the rendering process parallel
    * [x] evidence of exploring performance/rendering bounds by performing experiments (1 mark)
      * we can see CPU core reached 100% by setting number of particles to 10,000
-   * [ ] analysis/discussion supported by some data (1 mark)
+   * [x] analysis/discussion supported by some data (1 mark)
    * [ ] rigorous performance analysis supported by graphs or other data visulisations (e.g. paricle number vs. framerates) (1 mark)
 7. Sophistication and flair
    * [x] demonstrating 2 different things from the list in Task 7 (2 mark)

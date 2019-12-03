@@ -89,7 +89,7 @@ void frameStart(void) {
   gettimeofday(&frameStartTime, NULL);
 }
 
-void frameEnd(void *font, GLclampf r, GLclampf g, GLclampf b, 
+float frameEnd(void *font, GLclampf r, GLclampf g, GLclampf b, 
               GLfloat x, GLfloat y) {
   /* font: font to use, e.g., GLUT_BITMAP_HELVETICA_10
      r, g, b: text colour
@@ -132,6 +132,7 @@ void frameEnd(void *font, GLclampf r, GLclampf g, GLclampf b,
  glPopMatrix();
  glMatrixMode(matrixMode);
  if (lightingOn) glEnable(GL_LIGHTING);
+ return 1.0/elapsedTime;
 }
 
 /* end of frames.h */

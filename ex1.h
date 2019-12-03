@@ -50,7 +50,14 @@ GLfloat init_vz = 10;
 GLfloat init_b = 0;
 GLfloat gravity = -0.9;
 GLfloat fade = 0.005;
-GLfloat set_num_particles = 250;
+GLfloat set_num_particles = 1000;
+int cnt_particles = 0;
+
+int fps_index = 0;
+int fps_length = 0;
+float fps[10000];
+int num_of_particles[10000];
+FILE *fp = NULL;
 
 GLuint textures[2];
 

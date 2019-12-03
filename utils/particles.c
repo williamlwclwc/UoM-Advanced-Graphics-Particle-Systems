@@ -30,6 +30,7 @@ extern GLfloat init_b;
 extern GLfloat gravity;
 extern GLfloat fade;
 extern GLfloat set_num_particles;
+extern int cnt_particles;
 
 ///////////////////////////////////////////////
 
@@ -89,6 +90,7 @@ void init()
   int init_emit_num = myRandom() * set_num_particles;
   for (int i = 0; i < init_emit_num; i++)
   {
+    cnt_particles+=4;
     set_particle(particles+i, 0, 0, 0, 0);
   }
 }
@@ -101,7 +103,7 @@ void emit()
   
   for (int i = 0; i < set_num_particles; i++)
   {
-    if (particles[i].active == 0)
+    if (particles[i].active == 0 && cnt_particles < set_num_particles)
     {
       if (myRandom() > 0.9)
       {
@@ -124,6 +126,7 @@ void emit()
           p_or_n = -1;
         }
         z = p_or_n * myRandom() * 100;
+        cnt_particles+=4;
         set_particle(particles+i, x, y, z, 0);
       }
     }
@@ -139,10 +142,11 @@ void explode_ground(float x, float y, float z)
   {
     if (sm_particles[i].active == 0)
     {
+      cnt_particles++;
       set_particle(sm_particles+i, x, y, z, 1);
       cnt++;
     }
-    if (cnt == limit)
+    if (cnt == limit || cnt_particles >= set_num_particles)
     {
       break;
     }
@@ -338,6 +342,7 @@ void draw_particles(int i)
   // if a particle die
   if (y < 0 || particles[i].life < 0)
   {
+    cnt_particles-=4;
     if (y < 0)
     {
       y = 0;
@@ -398,6 +403,7 @@ void draw_sm_particles(int i)
   // if a particle die
   if (y < 0 || sm_particles[i].life < 0)
   {
+    cnt_particles--;
     sm_particles[i].x = 0;
     sm_particles[i].y = 0;
     sm_particles[i].z = 0;

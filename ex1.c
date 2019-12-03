@@ -98,7 +98,7 @@ void display()
       if(low_efficiency == 1)
       {
         // auto emission, wrong place, not efficient
-        if (num_active < set_num_particles / 4)
+        if (num_active < set_num_particles / 2)
         {
           emit();
         }
@@ -122,7 +122,15 @@ void display()
     }
   }
 
-  frameEnd(GLUT_BITMAP_HELVETICA_10, 1.0, 1.0, 1.0, 0.05, 0.95);
+  float cur_fps = frameEnd(GLUT_BITMAP_HELVETICA_10, 1.0, 1.0, 1.0, 0.05, 0.95);
+  fps[fps_index] = cur_fps;
+  num_of_particles[fps_index] = cnt_particles;
+  fps_index++;
+  fps_length++;
+  if (fps_index > 10000)
+  {
+    fps_index = 0;
+  }
 
   glutSwapBuffers();
   glutPostRedisplay();
@@ -142,7 +150,14 @@ void keyboard(unsigned char key, int x, int y)
     
     // enter
     case 13:
-      emit();
+      // save fps & num of particles to file
+      fp = fopen("data/fps_data.txt", "w+");
+      for(int i = 0; i < fps_length; i++)
+      {
+        fprintf(fp, "%.2f, %d\n", fps[i], num_of_particles[i]);
+      }
+      printf("%d\n", fps_length);
+      fclose(fp);
       break;
 
     // space
@@ -281,7 +296,7 @@ void initGraphics(int argc, char *argv[])
   // activate alpha value
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_BLEND);
-  makeAxes();
+  // makeAxes();
   init();
 }
 

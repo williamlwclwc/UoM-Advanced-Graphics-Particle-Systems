@@ -109,22 +109,22 @@ void processNumberMenu(int menuentry)
   switch(menuentry)
   {
     case 1:
-      set_num_particles = 25;
+      set_num_particles = 100;
       break;
     case 2:
-      set_num_particles = 250;
+      set_num_particles = 1000;
       break;
     case 3:
-      set_num_particles = 2500;
+      set_num_particles = 10000;
       break;
     case 4:
-      set_num_particles = 25000;
+      set_num_particles = 100000;
       break;
     case 5:
-      set_num_particles = 250000;
+      set_num_particles = 1000000;
       break;
     default:
-      set_num_particles = 250;
+      set_num_particles = 1000;
   }
 }
 
